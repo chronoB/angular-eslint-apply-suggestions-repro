@@ -1,0 +1,7 @@
+{
+  "src/app/app.ts": {
+    "@angular-eslint/component-selector": {
+      "count": 1
+    }
+  }
+}
