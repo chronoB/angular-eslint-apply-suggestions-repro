@@ -1,59 +1,29 @@
 # AngularEslintBulkSuppressions
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+## Issue
 
-## Development server
+This is a reproduction repo for using angular-eslint with the apply-suppressions options that was added to the eslint node.js api in version 10.1 [Docs](https://eslint.org/docs/latest/use/suppressions#usage-with-the-nodejs-api). 
 
-To start a local development server, run:
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3 (commit https://github.com/chronoB/angular-eslint-apply-suggestions-repro/commit/5d907861adbdd89954a5fd2510e5d6a4a7ecf485).
 
-```bash
-ng serve
+I then added angular-eslint via `ng add angular-eslint` and updated eslint to version 10.1.0 (commit https://github.com/chronoB/angular-eslint-apply-suggestions-repro/commit/14966382169a70c6a368c45c2768bb51a3d98728).
+
+Then I ran both ng lint and eslint to check if the both return 0 errors.
+
+```sh
+ng lint
+npx eslint .
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Afterwards I added a linting error (changed the selector of the app-component) and checked that both commands return the error (commit https://github.com/chronoB/angular-eslint-apply-suggestions-repro/commit/363f7a3a8a444ea7b21257609c8f90a083fdaedd).
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+Then I ran
+```sh
+npx eslint --suppress-all . # add eslint-suppressions.json
+ng lint # still returns 1 error 
+npx eslint . # does not return any error
 ```
+(commit https://github.com/chronoB/angular-eslint-apply-suggestions-repro/commit/cd10de55a124930627187fc1ae230f1a77acd921)
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Proposed Fix
+I created a patch in commit https://github.com/chronoB/angular-eslint-apply-suggestions-repro/commit/ffa2bd846a4fdf4290a89ac0e65246ec03c3e6df (located under patches/@angular-eslint+builder+21.3.1.patch) that adds the apply-suppressions option. I tested it both by running `ng lint --apply-suggestions` on its own and adding the apply-suggestions option in the angular.json and running `ng lint`. Both returned zero errors. I can't say anything about possible problems with backwards compatibility. 
