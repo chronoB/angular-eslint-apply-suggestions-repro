@@ -1,0 +1,42 @@
+diff --git a/node_modules/@angular-eslint/builder/dist/lint.impl.js b/node_modules/@angular-eslint/builder/dist/lint.impl.js
+index 50c34f7..d2038b6 100644
+--- a/node_modules/@angular-eslint/builder/dist/lint.impl.js
++++ b/node_modules/@angular-eslint/builder/dist/lint.impl.js
+@@ -34,6 +34,7 @@ exports.default = (0, architect_1.createBuilder)(async (options, context) => {
+         options.cacheLocation = options.cacheLocation
+             ? (0, path_1.join)(options.cacheLocation, projectName)
+             : null;
++        options.applySuppressions = options.applySuppressions ?? false;
+         /**
+          * Until ESLint v9 is released and the new so called flat config is the default
+          * we only want to support it if the user has explicitly opted into it by converting
+diff --git a/node_modules/@angular-eslint/builder/dist/schema.json b/node_modules/@angular-eslint/builder/dist/schema.json
+index 29fff2e..34a6386 100644
+--- a/node_modules/@angular-eslint/builder/dist/schema.json
++++ b/node_modules/@angular-eslint/builder/dist/schema.json
+@@ -127,6 +127,11 @@
+         { "type": "number" }
+       ],
+       "description": "The equivalent of the `--concurrency` flag on the ESLint CLI."
++    },
++    "applySuppressions": {
++      "type": "boolean",
++      "description": "Apply ESLint suppressions from eslint-suppressions.json.",
++      "default": false
+     }
+   },
+   "additionalProperties": false,
+diff --git a/node_modules/@angular-eslint/builder/dist/utils/eslint-utils.js b/node_modules/@angular-eslint/builder/dist/utils/eslint-utils.js
+index eaffc7b..8604074 100644
+--- a/node_modules/@angular-eslint/builder/dist/utils/eslint-utils.js
++++ b/node_modules/@angular-eslint/builder/dist/utils/eslint-utils.js
+@@ -54,6 +54,9 @@ async function resolveAndInstantiateESLint(eslintConfigPath, options, useFlatCon
+         cache: !!options.cache,
+         cacheLocation: options.cacheLocation || undefined,
+         cacheStrategy: options.cacheStrategy || undefined,
++        applySuppressions: options.applySuppressions ?? false,
++
++        
+         /**
+          * Default is `true` and if not overridden the eslint.lintFiles() method will throw an error
+          * when no target files are found.
